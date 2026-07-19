@@ -11,6 +11,7 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 $(call inherit-product, device/oneplus/astonc/device.mk)
 
 # Inherit some common Lineage stuff.
+TARGET_DISABLE_EPPE := true
 $(call inherit-product, vendor/lineage/config/common_full_phone.mk)
 
 PRODUCT_NAME := lineage_astonc
@@ -18,6 +19,13 @@ PRODUCT_DEVICE := astonc
 PRODUCT_MANUFACTURER := OnePlus
 PRODUCT_BRAND := OnePlus
 PRODUCT_MODEL := PJE110
+
+# Axion Specific Flags
+TARGET_INCLUDE_AXFX := true
+AXION_CAMERA_REAR_INFO := 50,8,2
+AXION_CAMERA_FRONT_INFO := 16
+AXION_MAINTAINER := JuanTamadski
+AXION_PROCESSOR := Snapdragon_8_Gen_1
 
 PRODUCT_GMS_CLIENTID_BASE := android-oneplus
 
