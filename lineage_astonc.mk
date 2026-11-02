@@ -13,6 +13,14 @@ $(call inherit-product, device/oneplus/astonc/device.mk)
 # Inherit some common Lineage stuff.
 $(call inherit-product, vendor/lineage/config/common_full_phone.mk)
 
+# Enable UI enhancements
+TARGET_ENABLE_BLUR := true
+
+# Enable features
+TARGET_HAS_UDFPS := true
+TARGET_SUPPORTS_QUICK_TAP := true
+EVO_BUILD_TYPE := Unofficial
+
 PRODUCT_NAME := lineage_astonc
 PRODUCT_DEVICE := astonc
 PRODUCT_MANUFACTURER := OnePlus
