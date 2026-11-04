@@ -23,16 +23,20 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 
 import org.lineageos.device.settings.fastcharge.FastChargeController;
-import org.lineageos.internal.util.FileUtils;
 
 public class Startup extends BroadcastReceiver {
 
     private static final String TAG = Startup.class.getSimpleName();
 
+    // Sent by lineage-sdk on ROMs that ship it; kept as a literal so this also
+    // builds on ROMs without lineage-sdk on the classpath.
+    private static final String ACTION_INITIALIZE_LINEAGE_HARDWARE =
+            "lineageos.intent.action.INITIALIZE_LINEAGE_HARDWARE";
+
     @Override
     public void onReceive(Context context, Intent intent) {
         final String action = intent.getAction();
-        if (lineageos.content.Intent.ACTION_INITIALIZE_LINEAGE_HARDWARE.equals(action)) {
+        if (ACTION_INITIALIZE_LINEAGE_HARDWARE.equals(action)) {
             DeviceSettings.restoreSliderStates(context);
             FastChargeController.getInstance(context).restore();
         }

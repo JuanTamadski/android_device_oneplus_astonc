@@ -29,6 +29,14 @@ public class BootCompletedReceiver extends BroadcastReceiver {
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
             if (Constants. DEBUG) Log.i(TAG, "Boot completed - starting DeviceSettingsService");
 
+            // ROMs without lineage-sdk never send INITIALIZE_LINEAGE_HARDWARE (see Startup),
+            // so restore the alert slider state here as well.
+            try {
+                DeviceSettings.restoreSliderStates(context);
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to restore slider states", e);
+            }
+
             try {
                 Intent serviceIntent = new Intent(context, DeviceSettingsService.class);
                 context.startService(serviceIntent);
