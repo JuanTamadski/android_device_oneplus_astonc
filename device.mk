@@ -98,3 +98,7 @@ $(call inherit-product-if-exists, vendor/oplus/camera/camera-vendor.mk)
 # DT_NEEDED — see device/oneplus/astonc/apsfixup + extract-files.py .add_needed).
 PRODUCT_PACKAGES += \
     libapsfixup
+
+# DeviceSettings
+PRODUCT_PACKAGES += \
+    DeviceSettings
