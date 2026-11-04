@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: The Evolution X Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <!-- Maintainer shown on the About phone screen -->
+    <string name="build_maintainer_summary" translatable="false">Juanski21</string>
+</resources>
