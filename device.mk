@@ -102,3 +102,6 @@ PRODUCT_PACKAGES += \
 # DeviceSettings
 PRODUCT_PACKAGES += \
     DeviceSettings
+
+# ConsumerIR app
+$(call inherit-product, vendor/oneplus/ir/config.mk)
