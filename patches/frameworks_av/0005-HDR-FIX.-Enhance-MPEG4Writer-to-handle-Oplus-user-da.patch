@@ -1,0 +1,55 @@
+From 268643f4254abf4e7c535fc785bad8a87ce29810 Mon Sep 17 00:00:00 2001
+From: Kill3rEz <98993017+Kill3rEz@users.noreply.github.com>
+Date: Wed, 17 Jun 2026 16:18:50 +0200
+Subject: [PATCH 05/10]  HDR FIX. Enhance MPEG4Writer to handle Oplus user data
+ with custom 'oplu' metadata atom in MP4.
+
+Ensures the 'udta' box is generated even without GPS data and writes a custom 'oplu' atom to safely store proprietary Oplus camera parameters (e.g., HDR and lens info) directly into the video container.
+
+(cherry picked from commit a2be3ce5f78e9cae2caed3efd5a8cf5bf215af38)
+---
+ media/libstagefright/MPEG4Writer.cpp | 21 +++++++++++++++++++--
+ 1 file changed, 19 insertions(+), 2 deletions(-)
+
+diff --git a/media/libstagefright/MPEG4Writer.cpp b/media/libstagefright/MPEG4Writer.cpp
+index a8ac7eafcb..9734b7193f 100644
+--- a/media/libstagefright/MPEG4Writer.cpp
++++ b/media/libstagefright/MPEG4Writer.cpp
+@@ -1552,7 +1552,12 @@ void MPEG4Writer::writeMvhdBox(int64_t durationUs) {
+ void MPEG4Writer::writeMoovBox(int64_t durationUs) {
+     beginBox("moov");
+     writeMvhdBox(durationUs);
+-    if (mAreGeoTagsAvailable) {
++    
++    // [PATCH OPLUSHDR] Assure that "udta" can be written even without GPS if the Oplus data is present
++    const char *oplusData = nullptr;
++    bool hasOplusData = (mStartMeta != nullptr && mStartMeta->findCString(kKeyOplusUserData, &oplusData) && oplusData != nullptr);
++
++    if (mAreGeoTagsAvailable || hasOplusData) {
+         writeUdtaBox();
+     }
+     writeMoovLevelMetaBox();
+@@ -5529,7 +5534,19 @@ void MPEG4Writer::Track::writeCo64Box() {
+ 
+ void MPEG4Writer::writeUdtaBox() {
+     beginBox("udta");
+-    writeGeoDataBox();
++    
++    if (mAreGeoTagsAvailable) {
++        writeGeoDataBox();
++    }
++
++    // [PATCH OPLUSHDR] Custom Atom Creation for Gallery/Lenses/HDR
++    const char *oplusData = nullptr;
++    if (mStartMeta != nullptr && mStartMeta->findCString(kKeyOplusUserData, &oplusData) && oplusData != nullptr) {
++        beginBox("oplu");
++        writeCString(oplusData);
++        endBox();
++    }
++
+     endBox();
+ }
+ 
+-- 
+2.56.1
+

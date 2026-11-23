@@ -1,0 +1,38 @@
+From ab136ff86e64287d0817abc170f780d4d7b295d4 Mon Sep 17 00:00:00 2001
+From: elpaablo <donopwhile1@gmail.com>
+Date: Sun, 14 Jun 2026 11:00:36 +0100
+Subject: [PATCH 01/10] av: add OPlus CameraService extension support
+
+Add the CameraServiceExt factory (ext/) that dlopens system_ext/lib64/
+libcsextimpl.so and wires OPlus camera-service extension transactions (zoom / UI
+events) through CameraService, plus the supporting CameraProviderManager,
+Camera3OutputUtils and CameraSessionStats hooks. Required for the APS v2 path.
+
+(cherry picked from commit 89dc8116d1dc8d31d969a62c604dcb99eb27fdb5)
+---
+ .../camera/libcameraservice/ext/CameraServiceExtFactory.cpp     | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/services/camera/libcameraservice/ext/CameraServiceExtFactory.cpp b/services/camera/libcameraservice/ext/CameraServiceExtFactory.cpp
+index cbb99177b2..139bdead31 100644
+--- a/services/camera/libcameraservice/ext/CameraServiceExtFactory.cpp
++++ b/services/camera/libcameraservice/ext/CameraServiceExtFactory.cpp
+@@ -12,6 +12,7 @@ void CameraServiceExtFactory::ensureLoaded() {
+     static bool sLoadAttempted = false;
+     if (sLoadAttempted) return;
+     sLoadAttempted = true;
++    if (sFunctionTable != nullptr) return;
+ 
+     const char* libPath = "system_ext/lib64/libcsextimpl.so";
+     void* handle = dlopen(libPath, RTLD_NOW);
+@@ -77,6 +78,7 @@ int CameraServiceExtFactory::onTransact(uint32_t code, const Parcel& data, Parce
+     if (sExtObject == nullptr) {
+         if (sFunctionTable == nullptr) {
+             ALOGV("CameraServiceExtFactory::onTransact: extension not loaded");
++            ALOGE("CameraServiceExtFactory::onTransact: extension not loaded");
+             return -1;
+         }
+         void* actualFunc = *(void**)sFunctionTable;
+-- 
+2.56.1
+

@@ -1,0 +1,51 @@
+From 7f1f9ba71ee6c30f380435fa8ca3aa3c44b1d2a8 Mon Sep 17 00:00:00 2001
+From: juanski <personal.juanangelo@gmail.com>
+Date: Thu, 5 Nov 2026 20:59:35 +0800
+Subject: [PATCH 10/10] CameraService: do not evict privileged clients
+ (persist.vendor.camera.privapp.list)
+
+---
+ services/camera/libcameraservice/CameraService.cpp | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/services/camera/libcameraservice/CameraService.cpp b/services/camera/libcameraservice/CameraService.cpp
+index 97b0e22225..07101619eb 100644
+--- a/services/camera/libcameraservice/CameraService.cpp
++++ b/services/camera/libcameraservice/CameraService.cpp
+@@ -39,6 +39,7 @@
+ #include <android-base/macros.h>
+ #include <android-base/parseint.h>
+ #include <android-base/strings.h>
++#include <android-base/properties.h>
+ #include <android/companion/virtualnative/IVirtualDeviceManagerNative.h>
+ #include <binder/ActivityManager.h>
+ #include <binder/AppOpsManager.h>
+@@ -1998,6 +1999,14 @@ status_t CameraService::checkIfDeviceIsUsable(const std::string& cameraId) const
+     return NO_ERROR;
+ }
+ 
++bool isPrivilegedClient(const std::string &packageName) {
++    std::vector<std::string> privilegedClientList = android::base::Split(
++            android::base::GetProperty("persist.vendor.camera.privapp.list", ""), ",");
++    auto it = std::find(privilegedClientList.begin(), privilegedClientList.end(),
++            packageName);
++    return it != privilegedClientList.end();
++}
++
+ void CameraService::finishConnectLocked(const sp<BasicClient>& client,
+         const CameraService::DescriptorPtr& desc, int oomScoreOffset, bool systemNativeClient) {
+ 
+@@ -2007,6 +2016,10 @@ void CameraService::finishConnectLocked(const sp<BasicClient>& client,
+                     oomScoreOffset, systemNativeClient);
+     auto evicted = mActiveClientManager.addAndEvict(clientDescriptor);
+ 
++    if (isPrivilegedClient(client->getPackageName())) {
++        evicted.clear();
++    }
++
+     logConnected(desc->getKey(), static_cast<int>(desc->getOwnerId()),
+             client->getPackageName());
+ 
+-- 
+2.56.1
+
