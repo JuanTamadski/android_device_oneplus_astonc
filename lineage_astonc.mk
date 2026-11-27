@@ -21,6 +21,10 @@ TARGET_HAS_UDFPS := true
 TARGET_SUPPORTS_QUICK_TAP := true
 EVO_BUILD_TYPE := Unofficial
 
+# Optional Settings entry for the custom boot splash flasher.
+CUSTOM_GOODIES_ENABLED ?= false
+# (if above is true) include packages/apps/Settings/custom_goodies/custom_goodies.mk
+
 PRODUCT_NAME := lineage_astonc
 PRODUCT_DEVICE := astonc
 PRODUCT_MANUFACTURER := OnePlus
